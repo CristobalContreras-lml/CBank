@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { observarUsuario } from "./services/authService";
+import { observarUsuario, cerrarSesion } from "./services/authService";
 import Login from "./components/Login";
 import Registro from "./components/Registro";
 
@@ -17,6 +17,12 @@ function App() {
     return () => unsubscribe();
   }, []);
 
+  async function handleLogoutClick() {
+    await cerrarSesion();
+    // No hace falta setUsuario(null) aquí: onAuthStateChanged
+    // detecta el logout y actualiza el estado solo.
+  }
+
   if (cargando) {
     return <p>Cargando...</p>;
   }
@@ -29,7 +35,12 @@ function App() {
     );
   }
 
-  return <p>Sesión activa: {usuario.email} (próximo paso: Dashboard)</p>;
+  return (
+    <div>
+      <p>Sesión activa: {usuario.email} (próximo paso: Dashboard)</p>
+      <button onClick={handleLogoutClick}>Cerrar sesión</button>
+    </div>
+  );
 }
 
 export default App;
