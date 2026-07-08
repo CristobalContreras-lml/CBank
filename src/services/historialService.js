@@ -10,7 +10,15 @@ export function observarHistorial(uid, callback) {
   let recibidos = [];
 
   function combinarYEnviar() {
-    const todos = [...enviados, ...recibidos].sort((a, b) => {
+    const mapa = new Map();
+    enviados.forEach((mov) => mapa.set(mov.id, mov));
+    recibidos.forEach((mov) => {
+      if (!mapa.has(mov.id)) {
+        mapa.set(mov.id, mov);
+      }
+    });
+
+    const todos = Array.from(mapa.values()).sort((a, b) => {
       const fechaA = a.fecha?.toMillis?.() ?? 0;
       const fechaB = b.fecha?.toMillis?.() ?? 0;
       return fechaB - fechaA;

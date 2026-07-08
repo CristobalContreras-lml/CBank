@@ -16,6 +16,14 @@ function HistorialMovimientos({ uid }) {
     return () => unsubscribe();
   }, [uid]);
 
+  function describirMovimiento(mov) {
+    if (mov.tipoEspecial === "deposito") return "Depósito";
+    if (mov.tipoEspecial === "retiro") return "Retiro";
+    return mov.tipo === "enviado"
+      ? `Enviaste a ${mov.receptorNombre}`
+      : `Recibiste de ${mov.emisorNombre}`;
+  }
+
   if (cargando) {
     return <p>Cargando historial...</p>;
   }
@@ -34,9 +42,7 @@ function HistorialMovimientos({ uid }) {
       <ul>
         {movimientos.map((mov) => (
           <li key={mov.id}>
-            {mov.tipo === "enviado"
-              ? `Enviaste a ${mov.receptorNombre}`
-              : `Recibiste de ${mov.emisorNombre}`}
+            {describirMovimiento(mov)}
             {" — $"}
             {mov.monto.toLocaleString("es-CL")}
             {" — "}

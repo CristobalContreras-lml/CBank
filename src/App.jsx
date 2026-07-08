@@ -5,6 +5,8 @@ import Registro from "./components/Registro";
 import Saldo from "./components/Saldo";
 import FormularioTransferencia from "./components/FormularioTransferencia";
 import HistorialMovimientos from "./components/HistorialMovimientos";
+import DepositoRetiro from "./components/DepositoRetiro";
+
 
 function App() {
   const [usuario, setUsuario] = useState(null);
@@ -41,8 +43,9 @@ function App() {
   return (
     <div>
       <Saldo uid={usuario.uid} />
-       <FormularioTransferencia emisorUid={usuario.uid} emisorEmail={usuario.email} />
-       <HistorialMovimientos uid={usuario.uid} />
+      <DepositoRetiro uid={usuario.uid} />
+      <FormularioTransferencia emisorUid={usuario.uid} emisorEmail={usuario.email} />
+      <HistorialMovimientos uid={usuario.uid} />
       <button onClick={handleLogoutClick}>Cerrar sesión</button>
     </div>
   );
