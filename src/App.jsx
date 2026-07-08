@@ -3,6 +3,7 @@ import { observarUsuario, cerrarSesion } from "./services/authService";
 import Login from "./components/Login";
 import Registro from "./components/Registro";
 import Saldo from "./components/Saldo";
+import FormularioTransferencia from "./components/FormularioTransferencia";
 
 function App() {
   const [usuario, setUsuario] = useState(null);
@@ -39,6 +40,7 @@ function App() {
   return (
     <div>
       <Saldo uid={usuario.uid} />
+       <FormularioTransferencia emisorUid={usuario.uid} emisorEmail={usuario.email} />
       <button onClick={handleLogoutClick}>Cerrar sesión</button>
     </div>
   );
