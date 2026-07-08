@@ -1,32 +1,15 @@
-import { useState, useEffect } from "react";
-import { observarUsuario, cerrarSesion } from "./services/authService";
+import { useSesion } from "./context/SesionContext";
+import { useState } from "react";
 import Login from "./components/Login";
 import Registro from "./components/Registro";
 import Saldo from "./components/Saldo";
+import DepositoRetiro from "./components/DepositoRetiro";
 import FormularioTransferencia from "./components/FormularioTransferencia";
 import HistorialMovimientos from "./components/HistorialMovimientos";
-import DepositoRetiro from "./components/DepositoRetiro";
-
 
 function App() {
-  const [usuario, setUsuario] = useState(null);
-  const [cargando, setCargando] = useState(true);
+  const { usuario, cargando, cerrarSesion } = useSesion();
   const [mostrarRegistro, setMostrarRegistro] = useState(false);
-
-  useEffect(() => {
-    const unsubscribe = observarUsuario((usuarioFirebase) => {
-      setUsuario(usuarioFirebase);
-      setCargando(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  async function handleLogoutClick() {
-    await cerrarSesion();
-    // No hace falta setUsuario(null) aquí: onAuthStateChanged
-    // detecta el logout y actualiza el estado solo.
-  }
 
   if (cargando) {
     return <p>Cargando...</p>;
@@ -46,7 +29,7 @@ function App() {
       <DepositoRetiro uid={usuario.uid} />
       <FormularioTransferencia emisorUid={usuario.uid} emisorEmail={usuario.email} />
       <HistorialMovimientos uid={usuario.uid} />
-      <button onClick={handleLogoutClick}>Cerrar sesión</button>
+      <button onClick={cerrarSesion}>Cerrar sesión</button>
     </div>
   );
 }
