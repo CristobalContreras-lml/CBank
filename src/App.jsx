@@ -2,6 +2,7 @@ import { useSesion } from "./context/SesionContext";
 import { useState } from "react";
 import Login from "./components/Login";
 import Registro from "./components/Registro";
+import Logo from "./components/Logo";
 import Saldo from "./components/Saldo";
 import DepositoRetiro from "./components/DepositoRetiro";
 import FormularioTransferencia from "./components/FormularioTransferencia";
@@ -25,11 +26,29 @@ function App() {
 
   return (
     <div>
-      <Saldo uid={usuario.uid} />
-      <DepositoRetiro uid={usuario.uid} />
-      <FormularioTransferencia emisorUid={usuario.uid} emisorEmail={usuario.email} />
-      <HistorialMovimientos uid={usuario.uid} />
-      <button onClick={cerrarSesion}>Cerrar sesión</button>
+      <header className="topbar">
+        <Logo tamaño="normal" invertir />
+        <div className="topbar-user">
+          <span>{usuario.email}</span>
+          <button className="btn-outline-light" onClick={cerrarSesion}>
+            Cerrar sesión
+          </button>
+        </div>
+      </header>
+
+      <main className="dashboard-shell">
+        <Saldo uid={usuario.uid} />
+
+        <div className="dashboard-grid">
+          <div>
+            <DepositoRetiro uid={usuario.uid} />
+            <FormularioTransferencia emisorUid={usuario.uid} emisorEmail={usuario.email} />
+          </div>
+          <div>
+            <HistorialMovimientos uid={usuario.uid} />
+          </div>
+        </div>
+      </main>
     </div>
   );
 }

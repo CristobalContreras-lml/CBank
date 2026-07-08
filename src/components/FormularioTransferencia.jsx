@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { buscarUsuarioPorEmail, transferir } from "../services/transferService";
 
+const LIMITE_OPERACION = 5000000;
+
 function FormularioTransferencia({ emisorUid, emisorEmail }) {
   const [emailDestino, setEmailDestino] = useState("");
   const [monto, setMonto] = useState("");
@@ -24,7 +26,6 @@ function FormularioTransferencia({ emisorUid, emisorEmail }) {
     const emailLimpio = emailDestino.trim();
     const montoNumero = Number(monto);
 
-    // --- Validaciones que NO requieren tocar Firestore ---
     if (!emailLimpio) {
       setError("Ingresa el correo del destinatario.");
       return;
@@ -35,12 +36,18 @@ function FormularioTransferencia({ emisorUid, emisorEmail }) {
       return;
     }
 
+    if (montoNumero > LIMITE_OPERACION) {
+      setError(
+        `Las transferencias sobre $${LIMITE_OPERACION.toLocaleString("es-CL")} requieren autorización de un ejecutivo. Contacta a soporte para continuar.`
+      );
+      return;
+    }
+
     if (emailLimpio === emisorEmail) {
       setError("No puedes transferirte dinero a ti mismo.");
       return;
     }
 
-    // --- A partir de aquí sí necesitamos consultar Firestore ---
     setEnviando(true);
     try {
       const destinatario = await buscarUsuarioPorEmail(emailLimpio);
@@ -74,9 +81,20 @@ function FormularioTransferencia({ emisorUid, emisorEmail }) {
   }
 
   return (
-    <div>
-      <h3>Transferir dinero</h3>
-      <form onSubmit={handleTransferSubmit}>
+    <div className="card">
+      <div className="card-header">
+        <div className="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M17 3l4 4-4 4" />
+            <path d="M3 7h18" />
+            <path d="M7 21l-4-4 4-4" />
+            <path d="M21 17H3" />
+          </svg>
+        </div>
+        <h3>Transferir dinero</h3>
+      </div>
+
+      <form className="form-stack" onSubmit={handleTransferSubmit}>
         <input
           type="email"
           placeholder="Correo del destinatario"
@@ -90,10 +108,10 @@ function FormularioTransferencia({ emisorUid, emisorEmail }) {
           onChange={handleMontoChange}
         />
 
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        {mensajeExito && <p style={{ color: "green" }}>{mensajeExito}</p>}
+        {error && <div className="alert alert-error">{error}</div>}
+        {mensajeExito && <div className="alert alert-success">{mensajeExito}</div>}
 
-        <button type="submit" disabled={enviando}>
+        <button type="submit" className="btn-primary" disabled={enviando}>
           {enviando ? "Transfiriendo..." : "Transferir"}
         </button>
       </form>

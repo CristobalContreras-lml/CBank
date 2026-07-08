@@ -51,34 +51,60 @@ function HistorialMovimientos({ uid }) {
     return descripcion.includes(texto);
   }
 
+    function claseBadge(mov) {
+    if (mov.tipoEspecial === "deposito") return "badge badge-entrada";
+    if (mov.tipoEspecial === "retiro") return "badge badge-salida";
+    return mov.tipo === "enviado" ? "badge badge-salida" : "badge badge-entrada";
+  }
+
   if (cargando) {
-    return <p>Cargando historial...</p>;
+    return (
+      <div className="card">
+        <div className="loading-row">
+          <span className="spinner"></span>
+          Cargando historial...
+        </div>
+      </div>
+    );
   }
 
   if (error) {
-    return <p style={{ color: "red" }}>Error al cargar el historial: {error}</p>;
+    return (
+      <div className="card">
+        <p style={{ color: "var(--crimson)" }}>Error al cargar el historial: {error}</p>
+      </div>
+    );
   }
 
   const movimientosFiltrados = movimientos.filter(coincideConFiltro);
 
-  return (
-    <div>
-      <h3>Historial de movimientos</h3>
+return (
+    <div className="card">
+      <div className="card-header">
+        <div className="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 6h16M4 12h16M4 18h10" />
+          </svg>
+        </div>
+        <h3>Historial de movimientos</h3>
+      </div>
 
-      <select value={filtroTipo} onChange={handleFiltroTipoChange}>
-        <option value="todos">Todos</option>
-        <option value="enviado">Enviados</option>
-        <option value="recibido">Recibidos</option>
-        <option value="deposito">Depósitos</option>
-        <option value="retiro">Retiros</option>
-      </select>
+      <div className="form-stack" style={{ marginBottom: 16 }}>
+        <select value={filtroTipo} onChange={handleFiltroTipoChange}>
+          <option value="todos">Todos</option>
+          <option value="enviado">Enviados</option>
+          <option value="recibido">Recibidos</option>
+          <option value="deposito">Depósitos</option>
+          <option value="retiro">Retiros</option>
+        </select>
 
-      <input
-        type="text"
-        placeholder="Buscar por nombre..."
-        value={textoBusqueda}
-        onChange={handleBusquedaChange}
-      />
+        <input
+          type="text"
+          placeholder="Buscar por nombre..."
+          value={textoBusqueda}
+          onChange={handleBusquedaChange}
+        />
+      </div>
 
       {movimientos.length === 0 && <p>Aún no tienes movimientos.</p>}
 
@@ -86,14 +112,14 @@ function HistorialMovimientos({ uid }) {
         <p>Ningún movimiento coincide con el filtro.</p>
       )}
 
-      <ul>
+      <ul className="lista-movimientos">
         {movimientosFiltrados.map((mov) => (
-          <li key={mov.id}>
-            {describirMovimiento(mov)}
-            {" — $"}
-            {mov.monto.toLocaleString("es-CL")}
-            {" — "}
-            {mov.fecha ? mov.fecha.toDate().toLocaleString("es-CL") : "procesando..."}
+          <li key={mov.id} className="fila-movimiento">
+            <span className={claseBadge(mov)}>{describirMovimiento(mov)}</span>
+            <span className="monto">${mov.monto.toLocaleString("es-CL")}</span>
+            <span className="fila-fecha">
+              {mov.fecha ? mov.fecha.toDate().toLocaleString("es-CL") : "procesando..."}
+            </span>
           </li>
         ))}
       </ul>

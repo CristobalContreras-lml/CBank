@@ -14,6 +14,7 @@
   --emerald-bg: #e6f3ee;
   --crimson: #b3313b;
   --crimson-bg: #fbeaec;
+  
 
   --radio: 14px;
   --radio-sm: 8px;
@@ -22,6 +23,8 @@
 
   --fuente-display: "Fraunces", serif;
   --fuente: "Inter", system-ui, -apple-system, sans-serif;
+  --azul-entrada: #100b63;
+  --azul-salida: #100b63;
 }
 
 * {
@@ -183,4 +186,419 @@ input::placeholder {
 .alert-success {
   background: var(--emerald-bg);
   color: var(--emerald);
+}
+
+/* ---------- Dashboard: barra superior ---------- */
+
+.topbar {
+  background: var(--ink);
+  padding: 14px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+
+.btn-outline-light {
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  padding: 8px 16px;
+  font-size: 0.85rem;
+}
+
+.btn-outline-light:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ---------- Dashboard: layout general ---------- */
+
+.dashboard-shell {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+@media (max-width: 860px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Tarjeta de saldo (elemento "firma", con proporción real de tarjeta) ---------- */
+
+.balance-card {
+  background: linear-gradient(135deg, var(--ink) 0%, var(--ink-2) 100%);
+  border-radius: 20px;
+  padding: 28px 32px;
+  color: #ffffff;
+  box-shadow: var(--sombra-tarjeta);
+  position: relative;
+  overflow: hidden;
+
+  flex: 1 1 380px;  
+  width: 100%;
+  max-width: 400px;
+  aspect-ratio: 1.586 / 1;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Marca de agua decorativa: un arco grande, eco del logo, apenas visible */
+.balance-card::before {
+  content: "";
+  position: absolute;
+  top: -60px;
+  right: -80px;
+  width: 260px;
+  height: 260px;
+  border: 26px solid rgba(200, 155, 61, 0.12);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Efecto de brillo que recorre la tarjeta cada 2 segundos */
+.balance-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 45%;
+  height: 100%;
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.22) 50%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  animation: brillo-tarjeta 10s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes brillo-tarjeta {
+  0% {
+    left: -60%;
+  }
+  25% {
+    left: 130%;
+  }
+  100% {
+    left: 130%;
+  }
+}
+
+.balance-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.balance-chip {
+  width: 46px;
+  height: 34px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--brass), var(--brass-soft));
+  position: relative;
+}
+
+.balance-chip::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border-radius: 3px;
+  background:
+    linear-gradient(to right, transparent 44%, rgba(0, 0, 0, 0.25) 44%, rgba(0, 0, 0, 0.25) 56%, transparent 56%),
+    linear-gradient(to bottom, transparent 30%, rgba(0, 0, 0, 0.2) 30%, rgba(0, 0, 0, 0.2) 36%, transparent 36%, transparent 64%, rgba(0, 0, 0, 0.2) 64%, rgba(0, 0, 0, 0.2) 70%, transparent 70%);
+}
+
+.balance-top-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.balance-logo {
+  height: 52px;
+  width: auto;
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
+}
+.balance-label {
+  font-size: 0.85rem;
+  opacity: 0.8;
+  margin: 0 0 4px;
+}
+
+.balance-amount {
+  font-family: var(--fuente-display);
+  font-size: 2.3rem;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+
+.balance-footer {
+  font-size: 0.78rem;
+  opacity: 0.6;
+  margin: 0;
+}
+
+.balance-row {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.balance-welcome h2 {
+  margin-bottom: 6px;
+}
+
+.balance-welcome p {
+  color: var(--texto-muted);
+  margin: 0;
+}
+/* ---------- Tarjetas de sección (depósito, transferencia, historial) ---------- */
+
+.card {
+  background: linear-gradient(180deg, #ffffff 0%, #f4f8fc 100%);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 24px;
+  box-shadow: var(--sombra);
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Línea de acento azul/dorado arriba de cada tarjeta */
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--ink) 0%, var(--ink-2) 65%, var(--brass) 100%);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--ink) 0%, var(--ink-2) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--brass-soft);
+}
+
+.card-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.card h3 {
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+/* Inputs dentro de tarjetas: tono azulado, se diferencian del blanco de la tarjeta */
+.card input,
+.card select {
+  background: var(--paper);
+  border: 1px solid var(--borde);
+}
+
+.card input:focus,
+.card select:focus {
+  background: #ffffff;
+  border-color: var(--ink-2);
+  box-shadow: 0 0 0 3px rgba(28, 76, 130, 0.12);
+}
+
+.form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-row {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-deposito {
+  background: var(--azul-entrada);
+  color: #ffffff;
+  flex: 1;
+}
+
+.btn-deposito:not(:disabled):hover {
+  opacity: 0.9;
+}
+
+.btn-retiro {
+  background: var(--azul-salida);
+  color: #ffffff;
+  flex: 1;
+}
+
+.btn-retiro:not(:disabled):hover {
+  opacity: 0.9;
+}
+
+/* ---------- Spinner de carga ---------- */
+
+.spinner {
+  width: 22px;
+  height: 22px;
+  border: 3px solid var(--borde);
+  border-top-color: var(--ink);
+  border-radius: 50%;
+  animation: girar 0.7s linear infinite;
+  display: inline-block;
+}
+
+.spinner-claro {
+  border-color: rgba(255, 255, 255, 0.25);
+  border-top-color: #ffffff;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--texto-muted);
+  padding: 8px 0;
+}
+
+/* ---------- Historial: filas estilo cartola ---------- */
+
+.lista-movimientos {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.fila-movimiento {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--borde);
+  font-size: 0.92rem;
+  gap: 12px;
+}
+
+.fila-movimiento:last-child {
+  border-bottom: none;
+}
+
+.fila-fecha {
+  color: var(--texto-muted);
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  flex: 1;
+}
+
+.badge-entrada {
+  background: var(--paper);
+  color: var(--azul-entrada);
+  border: 1px solid rgba(63, 124, 176, 0.3);
+}
+
+.badge-salida {
+  background: var(--paper);
+  color: var(--azul-salida);
+  border: 1px solid rgba(28, 63, 99, 0.3);
+}
+
+.balance-welcome {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex: 1 1 320px;
+  min-width: 280px;
+}
+
+.balance-mascota {
+  height: 110px;
+  width: auto;
+  flex-shrink: 0;
+}
+
+.balance-burbuja {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 16px 20px;
+  box-shadow: var(--sombra);
+}
+
+.balance-burbuja::before {
+  content: "";
+  position: absolute;
+  left: -9px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 9px solid transparent;
+  border-bottom: 9px solid transparent;
+  border-right: 10px solid var(--surface);
+}
+
+.balance-burbuja h2 {
+  font-size: 1.3rem;
+  margin-bottom: 4px;
+}
+
+.balance-burbuja p {
+  color: var(--texto-muted);
+  margin: 0;
+  font-size: 0.92rem;
 }
