@@ -5,6 +5,8 @@ function HistorialMovimientos({ uid }) {
   const [movimientos, setMovimientos] = useState([]);
   const [error, setError] = useState(null);
   const [cargando, setCargando] = useState(true);
+  const [filtroTipo, setFiltroTipo] = useState("todos");
+  const [textoBusqueda, setTextoBusqueda] = useState("");
 
   useEffect(() => {
     const unsubscribe = observarHistorial(uid, ({ movimientos, error }) => {
@@ -24,6 +26,31 @@ function HistorialMovimientos({ uid }) {
       : `Recibiste de ${mov.emisorNombre}`;
   }
 
+  function handleFiltroTipoChange(event) {
+    setFiltroTipo(event.target.value);
+  }
+
+  function handleBusquedaChange(event) {
+    setTextoBusqueda(event.target.value);
+  }
+
+  function coincideConFiltro(mov) {
+    const coincideTipo =
+      filtroTipo === "todos" ||
+      (filtroTipo === "deposito" && mov.tipoEspecial === "deposito") ||
+      (filtroTipo === "retiro" && mov.tipoEspecial === "retiro") ||
+      (filtroTipo === "enviado" && mov.tipo === "enviado" && !mov.tipoEspecial) ||
+      (filtroTipo === "recibido" && mov.tipo === "recibido" && !mov.tipoEspecial);
+
+    if (!coincideTipo) return false;
+
+    if (!textoBusqueda.trim()) return true;
+
+    const texto = textoBusqueda.trim().toLowerCase();
+    const descripcion = describirMovimiento(mov).toLowerCase();
+    return descripcion.includes(texto);
+  }
+
   if (cargando) {
     return <p>Cargando historial...</p>;
   }
@@ -32,15 +59,35 @@ function HistorialMovimientos({ uid }) {
     return <p style={{ color: "red" }}>Error al cargar el historial: {error}</p>;
   }
 
-  if (movimientos.length === 0) {
-    return <p>Aún no tienes movimientos.</p>;
-  }
+  const movimientosFiltrados = movimientos.filter(coincideConFiltro);
 
   return (
     <div>
       <h3>Historial de movimientos</h3>
+
+      <select value={filtroTipo} onChange={handleFiltroTipoChange}>
+        <option value="todos">Todos</option>
+        <option value="enviado">Enviados</option>
+        <option value="recibido">Recibidos</option>
+        <option value="deposito">Depósitos</option>
+        <option value="retiro">Retiros</option>
+      </select>
+
+      <input
+        type="text"
+        placeholder="Buscar por nombre..."
+        value={textoBusqueda}
+        onChange={handleBusquedaChange}
+      />
+
+      {movimientos.length === 0 && <p>Aún no tienes movimientos.</p>}
+
+      {movimientos.length > 0 && movimientosFiltrados.length === 0 && (
+        <p>Ningún movimiento coincide con el filtro.</p>
+      )}
+
       <ul>
-        {movimientos.map((mov) => (
+        {movimientosFiltrados.map((mov) => (
           <li key={mov.id}>
             {describirMovimiento(mov)}
             {" — $"}
