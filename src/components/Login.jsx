@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { iniciarSesion } from "../services/authService";
+import Logo from "./Logo";
 
 function Login({ onCambiarARegistro }) {
   const [email, setEmail] = useState("");
@@ -27,8 +28,6 @@ function Login({ onCambiarARegistro }) {
     setEnviando(true);
     try {
       await iniciarSesion(email.trim(), password);
-      // Igual que en Registro: no navegamos manualmente,
-      // App.jsx reacciona solo vía onAuthStateChanged.
     } catch (err) {
       setError(traducirErrorFirebase(err.code));
       setEnviando(false);
@@ -45,35 +44,42 @@ function Login({ onCambiarARegistro }) {
   }
 
   return (
-    <div>
-      <h2>Iniciar sesión</h2>
-      <form onSubmit={handleLoginSubmit}>
-        <input
-          type="email"
-          placeholder="Correo electrónico"
-          value={email}
-          onChange={handleEmailChange}
-        />
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={password}
-          onChange={handlePasswordChange}
-        />
+    <div className="auth-shell">
+      <div className="auth-card">
+        <div className="auth-logo-wrap">
+          <Logo tamaño="grande" />
+        </div>
+        <h2 className="auth-title">Inicia sesión</h2>
+        <p className="auth-subtitle">Ingresa a tu cuenta CBank</p>
 
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        <form className="auth-form" onSubmit={handleLoginSubmit}>
+          <input
+            type="email"
+            placeholder="Correo electrónico"
+            value={email}
+            onChange={handleEmailChange}
+          />
+          <input
+            type="password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={handlePasswordChange}
+          />
 
-        <button type="submit" disabled={enviando}>
-          {enviando ? "Ingresando..." : "Ingresar"}
-        </button>
-      </form>
+          {error && <div className="alert alert-error">{error}</div>}
 
-      <p>
-        ¿No tienes cuenta?{" "}
-        <button type="button" onClick={onCambiarARegistro}>
-          Regístrate
-        </button>
-      </p>
+          <button type="submit" className="btn-primary" disabled={enviando}>
+            {enviando ? "Ingresando..." : "Ingresar"}
+          </button>
+        </form>
+
+        <p className="auth-switch">
+          ¿No tienes cuenta?{" "}
+          <button type="button" className="btn-link" onClick={onCambiarARegistro}>
+            Regístrate
+          </button>
+        </p>
+      </div>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { registrarUsuario } from "../services/authService";
+import Logo from "./Logo";
 
 function Registro({ onCambiarALogin }) {
   const [nombre, setNombre] = useState("");
@@ -47,8 +48,6 @@ function Registro({ onCambiarALogin }) {
     setEnviando(true);
     try {
       await registrarUsuario(nombre.trim(), email.trim(), password);
-      // No navegamos manualmente a ningún lado: App.jsx detecta
-      // el cambio de sesión automáticamente vía onAuthStateChanged.
     } catch (err) {
       setError(traducirErrorFirebase(err.code));
       setEnviando(false);
@@ -62,47 +61,54 @@ function Registro({ onCambiarALogin }) {
   }
 
   return (
-    <div>
-      <h2>Crear cuenta</h2>
-      <form onSubmit={handleRegistroSubmit}>
-        <input
-          type="text"
-          placeholder="Nombre"
-          value={nombre}
-          onChange={handleNombreChange}
-        />
-        <input
-          type="email"
-          placeholder="Correo electrónico"
-          value={email}
-          onChange={handleEmailChange}
-        />
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={password}
-          onChange={handlePasswordChange}
-        />
-        <input
-          type="password"
-          placeholder="Confirmar contraseña"
-          value={confirmarPassword}
-          onChange={handleConfirmarPasswordChange}
-        />
+    <div className="auth-shell">
+      <div className="auth-card">
+        <div className="auth-logo-wrap">
+          <Logo tamaño="grande" />
+        </div>
+        <h2 className="auth-title">Crea tu cuenta</h2>
+        <p className="auth-subtitle">Empieza con $100.000 de regalo</p>
 
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        <form className="auth-form" onSubmit={handleRegistroSubmit}>
+          <input
+            type="text"
+            placeholder="Nombre"
+            value={nombre}
+            onChange={handleNombreChange}
+          />
+          <input
+            type="email"
+            placeholder="Correo electrónico"
+            value={email}
+            onChange={handleEmailChange}
+          />
+          <input
+            type="password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={handlePasswordChange}
+          />
+          <input
+            type="password"
+            placeholder="Confirmar contraseña"
+            value={confirmarPassword}
+            onChange={handleConfirmarPasswordChange}
+          />
 
-        <button type="submit" disabled={enviando}>
-          {enviando ? "Creando cuenta..." : "Registrarme"}
-        </button>
-      </form>
+          {error && <div className="alert alert-error">{error}</div>}
 
-      <p>
-        ¿Ya tienes cuenta?{" "}
-        <button type="button" onClick={onCambiarALogin}>
-          Inicia sesión
-        </button>
-      </p>
+          <button type="submit" className="btn-primary" disabled={enviando}>
+            {enviando ? "Creando cuenta..." : "Registrarme"}
+          </button>
+        </form>
+
+        <p className="auth-switch">
+          ¿Ya tienes cuenta?{" "}
+          <button type="button" className="btn-link" onClick={onCambiarALogin}>
+            Inicia sesión
+          </button>
+        </p>
+      </div>
     </div>
   );
 }
