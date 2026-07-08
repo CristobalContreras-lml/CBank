@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { observarUsuario, cerrarSesion } from "./services/authService";
 import Login from "./components/Login";
 import Registro from "./components/Registro";
+import Saldo from "./components/Saldo";
 
 function App() {
   const [usuario, setUsuario] = useState(null);
@@ -37,7 +38,7 @@ function App() {
 
   return (
     <div>
-      <p>Sesión activa: {usuario.email} (próximo paso: Dashboard)</p>
+      <Saldo uid={usuario.uid} />
       <button onClick={handleLogoutClick}>Cerrar sesión</button>
     </div>
   );
