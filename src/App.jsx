@@ -4,6 +4,7 @@ import Login from "./components/Login";
 import Registro from "./components/Registro";
 import Saldo from "./components/Saldo";
 import FormularioTransferencia from "./components/FormularioTransferencia";
+import HistorialMovimientos from "./components/HistorialMovimientos";
 
 function App() {
   const [usuario, setUsuario] = useState(null);
@@ -41,6 +42,7 @@ function App() {
     <div>
       <Saldo uid={usuario.uid} />
        <FormularioTransferencia emisorUid={usuario.uid} emisorEmail={usuario.email} />
+       <HistorialMovimientos uid={usuario.uid} />
       <button onClick={handleLogoutClick}>Cerrar sesión</button>
     </div>
   );

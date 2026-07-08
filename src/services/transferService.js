@@ -53,6 +53,8 @@ export async function transferir(emisorUid, receptorUid, monto) {
     transaction.set(refMovimiento, {
       emisorUid,
       receptorUid,
+      emisorNombre: snapEmisor.data().nombre,
+      receptorNombre: snapReceptor.data().nombre,
       monto,
       fecha: serverTimestamp(),
     });
