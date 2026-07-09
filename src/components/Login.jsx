@@ -3,6 +3,7 @@ import { iniciarSesion } from "../services/authService";
 import { useSesion } from "../context/SesionContext";
 import Logo from "./Logo";
 import mascotaInactividad from "../assets/mascota-cbank-inactividad.png";
+import fondoEdificios from "../assets/fondo-edificios.jpg";
 
 function Login({ onCambiarARegistro }) {
   const { motivoCierre } = useSesion();
@@ -47,7 +48,7 @@ function Login({ onCambiarARegistro }) {
   }
 
   return (
-    <div className="auth-shell">
+    <div className="auth-shell" style={{ backgroundImage: `url(${fondoEdificios})` }}>
       <div className="auth-card">
         {motivoCierre === "inactividad" && (
           <div className="alerta-inactividad">

@@ -105,11 +105,32 @@ input::placeholder {
 
 .auth-shell {
   min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.auth-shell {
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: linear-gradient(160deg, var(--ink) 0%, var(--ink-2) 100%);
+  position: relative;
+  background-size: cover;
+  background-position: center;
+}
+
+.auth-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, rgba(11, 31, 58, 0.55) 0%, rgba(28, 76, 130, 0.4) 100%);
+  z-index: 0;
+}
+
+.auth-card {
+  position: relative;
+  z-index: 1;
 }
 
 .auth-card {

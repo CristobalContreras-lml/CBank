@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { registrarUsuario } from "../services/authService";
 import Logo from "./Logo";
+import fondoEdificios from "../assets/fondo-edificios.jpg";
 
 function Registro({ onCambiarALogin }) {
   const [nombre, setNombre] = useState("");
@@ -60,8 +61,8 @@ function Registro({ onCambiarALogin }) {
     return "Ocurrió un error al registrar la cuenta. Intenta nuevamente.";
   }
 
-  return (
-    <div className="auth-shell">
+return (
+    <div className="auth-shell" style={{ backgroundImage: `url(${fondoEdificios})` }}>
       <div className="auth-card">
         <div className="auth-logo-wrap">
           <Logo tamaño="grande" />
