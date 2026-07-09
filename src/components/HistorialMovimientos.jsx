@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { observarHistorial } from "../services/historialService";
+import TarjetaDesplegable from "./TarjetaDesplegable";
 
 function HistorialMovimientos({ uid }) {
   const [movimientos, setMovimientos] = useState([]);
@@ -51,44 +52,41 @@ function HistorialMovimientos({ uid }) {
     return descripcion.includes(texto);
   }
 
-    function claseBadge(mov) {
+  function claseBadge(mov) {
     if (mov.tipoEspecial === "deposito") return "badge badge-entrada";
     if (mov.tipoEspecial === "retiro") return "badge badge-salida";
     return mov.tipo === "enviado" ? "badge badge-salida" : "badge badge-entrada";
   }
 
+  const icono = (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 6h16M4 12h16M4 18h10" />
+    </svg>
+  );
+
   if (cargando) {
     return (
-      <div className="card">
+      <TarjetaDesplegable titulo="Historial de movimientos" icono={icono}>
         <div className="loading-row">
           <span className="spinner"></span>
           Cargando historial...
         </div>
-      </div>
+      </TarjetaDesplegable>
     );
   }
 
   if (error) {
     return (
-      <div className="card">
+      <TarjetaDesplegable titulo="Historial de movimientos" icono={icono}>
         <p style={{ color: "var(--crimson)" }}>Error al cargar el historial: {error}</p>
-      </div>
+      </TarjetaDesplegable>
     );
   }
 
   const movimientosFiltrados = movimientos.filter(coincideConFiltro);
 
-return (
-    <div className="card">
-      <div className="card-header">
-        <div className="card-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 6h16M4 12h16M4 18h10" />
-          </svg>
-        </div>
-        <h3>Historial de movimientos</h3>
-      </div>
-
+  return (
+    <TarjetaDesplegable titulo="Historial de movimientos" icono={icono}>
       <div className="form-stack" style={{ marginBottom: 16 }}>
         <select value={filtroTipo} onChange={handleFiltroTipoChange}>
           <option value="todos">Todos</option>
@@ -116,14 +114,17 @@ return (
         {movimientosFiltrados.map((mov) => (
           <li key={mov.id} className="fila-movimiento">
             <span className={claseBadge(mov)}>{describirMovimiento(mov)}</span>
-            <span className="monto">${mov.monto.toLocaleString("es-CL")}</span>
+            <span className="monto">
+              {mov.tipoEspecial === "retiro" || (mov.tipo === "enviado" && !mov.tipoEspecial) ? "−" : "+"}
+              ${mov.monto.toLocaleString("es-CL")}
+            </span>
             <span className="fila-fecha">
               {mov.fecha ? mov.fecha.toDate().toLocaleString("es-CL") : "procesando..."}
             </span>
           </li>
         ))}
       </ul>
-    </div>
+    </TarjetaDesplegable>
   );
 }
 

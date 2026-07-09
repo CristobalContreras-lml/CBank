@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { depositar, retirar } from "../services/depositoService";
+import TarjetaDesplegable from "./TarjetaDesplegable";
 
 const LIMITE_OPERACION = 5000000;
 
@@ -71,18 +72,15 @@ function DepositoRetiro({ uid }) {
     }
   }
 
-  return (
-    <div className="card">
-      <div className="card-header">
-        <div className="card-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M7 10l5-5 5 5" />
-            <path d="M7 14l5 5 5-5" />
-          </svg>
-        </div>
-        <h3>Depósito / Retiro</h3>
-      </div>
+const icono = (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M7 10l5-5 5 5" />
+      <path d="M7 14l5 5 5-5" />
+    </svg>
+  );
 
+  return (
+    <TarjetaDesplegable titulo="Depósito / Retiro" icono={icono}>
       <div className="form-stack">
         <input
           type="number"
@@ -103,7 +101,7 @@ function DepositoRetiro({ uid }) {
           </button>
         </div>
       </div>
-    </div>
+    </TarjetaDesplegable>
   );
 }
 

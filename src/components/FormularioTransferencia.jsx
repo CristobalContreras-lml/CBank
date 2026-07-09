@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { buscarUsuarioPorEmail, transferir } from "../services/transferService";
+import TarjetaDesplegable from "./TarjetaDesplegable";
 
 const LIMITE_OPERACION = 5000000;
 
@@ -80,20 +81,17 @@ function FormularioTransferencia({ emisorUid, emisorEmail }) {
     return "Ocurrió un error al procesar la transferencia. Intenta nuevamente.";
   }
 
-  return (
-    <div className="card">
-      <div className="card-header">
-        <div className="card-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M17 3l4 4-4 4" />
-            <path d="M3 7h18" />
-            <path d="M7 21l-4-4 4-4" />
-            <path d="M21 17H3" />
-          </svg>
-        </div>
-        <h3>Transferir dinero</h3>
-      </div>
+  const icono = (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 3l4 4-4 4" />
+      <path d="M3 7h18" />
+      <path d="M7 21l-4-4 4-4" />
+      <path d="M21 17H3" />
+    </svg>
+  );
 
+  return (
+    <TarjetaDesplegable titulo="Transferir dinero" icono={icono}>
       <form className="form-stack" onSubmit={handleTransferSubmit}>
         <input
           type="email"
@@ -115,7 +113,7 @@ function FormularioTransferencia({ emisorUid, emisorEmail }) {
           {enviando ? "Transfiriendo..." : "Transferir"}
         </button>
       </form>
-    </div>
+    </TarjetaDesplegable>
   );
 }
 

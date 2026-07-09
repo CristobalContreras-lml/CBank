@@ -40,13 +40,9 @@ function App() {
         <Saldo uid={usuario.uid} />
 
         <div className="dashboard-grid">
-          <div>
-            <DepositoRetiro uid={usuario.uid} />
-            <FormularioTransferencia emisorUid={usuario.uid} emisorEmail={usuario.email} />
-          </div>
-          <div>
-            <HistorialMovimientos uid={usuario.uid} />
-          </div>
+          <DepositoRetiro uid={usuario.uid} />
+          <FormularioTransferencia emisorUid={usuario.uid} emisorEmail={usuario.email} />
+          <HistorialMovimientos uid={usuario.uid} />
         </div>
       </main>
     </div>
