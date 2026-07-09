@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { iniciarSesion } from "../services/authService";
+import { useSesion } from "../context/SesionContext";
 import Logo from "./Logo";
+import mascotaInactividad from "../assets/mascota-cbank-inactividad.png";
 
 function Login({ onCambiarARegistro }) {
+  const { motivoCierre } = useSesion();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -46,6 +49,13 @@ function Login({ onCambiarARegistro }) {
   return (
     <div className="auth-shell">
       <div className="auth-card">
+        {motivoCierre === "inactividad" && (
+          <div className="alerta-inactividad">
+            <img src={mascotaInactividad} alt="Sesión cerrada por inactividad" />
+            <p>Se cerró la página por inactividad</p>
+          </div>
+        )}
+
         <div className="auth-logo-wrap">
           <Logo tamaño="grande" />
         </div>
