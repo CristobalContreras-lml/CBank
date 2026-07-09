@@ -45,6 +45,21 @@ function App() {
           <HistorialMovimientos uid={usuario.uid} />
         </div>
       </main>
+      <footer className="footer-app">
+        <div className="footer-app-icono">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 21h18" />
+            <path d="M5 21V9l7-6 7 6v12" />
+            <path d="M9 21v-6h6v6" />
+          </svg>
+        </div>
+        <p>
+          <strong>© CBank 2026.</strong> Todos los derechos reservados.
+          <br />
+          CBank es un proyecto académico desarrollado con fines educativos.
+          No constituye una institución financiera real ni ofrece servicios bancarios legítimos.
+        </p>
+      </footer>
     </div>
   );
 }
