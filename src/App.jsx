@@ -7,6 +7,7 @@ import Saldo from "./components/Saldo";
 import DepositoRetiro from "./components/DepositoRetiro";
 import FormularioTransferencia from "./components/FormularioTransferencia";
 import HistorialMovimientos from "./components/HistorialMovimientos";
+import ThemeToggle from "./components/ThemeToggle";
 
 function App() {
   const { usuario, cargando, cerrarSesion } = useSesion();
@@ -29,6 +30,7 @@ function App() {
       <header className="topbar">
         <Logo tamaño="normal" invertir />
         <div className="topbar-user">
+           <ThemeToggle />
           <span>{usuario.email}</span>
           <button className="btn-outline-light" onClick={cerrarSesion}>
             Cerrar sesión

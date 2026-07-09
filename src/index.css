@@ -14,6 +14,9 @@
   --emerald-bg: #e6f3ee;
   --crimson: #b3313b;
   --crimson-bg: #fbeaec;
+  --texto-titulo: var(--ink);
+  --card-grad-1: #ffffff;
+  --card-grad-2: #f4f8fc;
   
 
   --radio: 14px;
@@ -37,6 +40,7 @@ body {
   background-color: var(--paper);
   color: var(--texto);
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 #root {
@@ -45,7 +49,7 @@ body {
 
 h1, h2, h3 {
   font-family: var(--fuente-display);
-  color: var(--ink);
+  color: var(--texto-titulo);
   margin: 0 0 12px;
   font-weight: 600;
 }
@@ -118,6 +122,17 @@ input::placeholder {
   position: relative;
   background-size: cover;
   background-position: center;
+
+  /* Fuerza tokens de modo claro sin importar el tema global activo:
+     el Login/Registro tienen su propia estética fija (foto + vidrio
+     esmerilado) y no participan del toggle claro/oscuro. */
+
+  --paper: #eef2f6;
+  --surface: #ffffff;
+  --texto: #16233a;
+  --texto-muted: #5b6b7c;
+  --borde: #dce3ea;
+  --texto-titulo: var(--ink);
 }
 
 .auth-shell::before {
@@ -314,6 +329,46 @@ input::placeholder {
 
 .btn-outline-light:hover {
   background: rgba(255, 255, 255, 0.08);
+
+.theme-toggle {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.25s ease, color 0.25s ease, filter 0.25s ease;
+}
+
+.theme-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Ampolleta ENCENDIDA — modo día activo */
+.theme-toggle-encendido {
+  background: rgba(255, 209, 102, 0.18);
+  border-color: rgba(255, 209, 102, 0.55);
+  color: #ffd166;
+  filter: drop-shadow(0 0 6px rgba(255, 209, 102, 0.7));
+}
+
+.theme-toggle-encendido:hover {
+  background: rgba(255, 209, 102, 0.28);
+}
+
+/* Ampolleta APAGADA — modo noche activo */
+.theme-toggle-apagado {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.theme-toggle-apagado:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
 }
 
 /* ---------- Dashboard: layout general ---------- */
@@ -522,7 +577,7 @@ input::placeholder {
 /* ---------- Tarjetas de sección (depósito, transferencia, historial) ---------- */
 
 .card {
-  background: linear-gradient(180deg, #ffffff 0%, #f4f8fc 100%);
+  background: linear-gradient(180deg, var(--card-grad-1) 0%, var(--card-grad-2) 100%);
   border: 1px solid var(--borde);
   border-radius: var(--radio);
   padding: 24px;
@@ -800,4 +855,55 @@ input::placeholder {
   font-weight: 600;
   color: var(--ink);
   font-size: 0.95rem;
+}
+
+[data-theme="dark"] {
+  --paper: #101923;
+  --surface: #17212e;
+  --texto: #e7edf5;
+  --texto-muted: #8fa0b5;
+  --borde: #29394c;
+  --texto-titulo: #f2f5f9;
+  --emerald-bg: rgba(18, 128, 92, 0.22);
+  --crimson-bg: rgba(179, 49, 59, 0.22);
+  --card-grad-1: #17212e;
+  --card-grad-2: #111a25;
+}
+
+.theme-toggle {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.25s ease, color 0.25s ease, filter 0.25s ease;
+}
+
+.theme-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+
+.theme-toggle-encendido {
+  background: rgba(255, 209, 102, 0.18);
+  border-color: rgba(255, 209, 102, 0.55);
+  color: #ffd166;
+  filter: drop-shadow(0 0 6px rgba(255, 209, 102, 0.7));
+}
+
+.theme-toggle-encendido:hover {
+  background: rgba(255, 209, 102, 0.28);
+}
+
+.theme-toggle-apagado {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.theme-toggle-apagado:hover {
+  background: rgba(255, 255, 255, 0.08);
 }
