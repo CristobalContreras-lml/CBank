@@ -58,7 +58,9 @@ Ambas cuentas parten con un saldo inicial de $100.000, y ya tienen movimientos p
 
 ## Modelo de datos
 
-![Modelo de datos de CBank](./docs/modelo-datos.png)
+<p align="center">
+  <img src="./docs/modelo-datos.png" alt="Modelo de datos de CBank" width="500">
+</p>
 
 **Diferencias respecto al modelo base sugerido, y por qué:**
 
