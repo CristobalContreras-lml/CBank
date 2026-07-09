@@ -58,26 +58,39 @@ Ambas cuentas parten con un saldo inicial de $100.000, y ya tienen movimientos p
 
 ## Modelo de datos
 
-users/{uid}
-├── nombre: string
-├── email: string
-└── saldo: number
-movimientos/{id}
-├── emisorUid: string
-├── receptorUid: string
-├── emisorNombre: string
-├── receptorNombre: string
-├── monto: number
-├── fecha: timestamp (serverTimestamp)
-└── tipoEspecial?: "deposito" | "retiro"   (ausente en transferencias normales)
+## 🗂 Modelo de datos
 
-**Diferencias respecto al modelo base sugerido, y por qué:**
+```mermaid
+erDiagram
+  USERS ||--o{ MOVIMIENTOS : envia
+  USERS ||--o{ MOVIMIENTOS : recibe
+  USERS {
+    string uid PK
+    string nombre
+    string email
+    number saldo
+  }
+  MOVIMIENTOS {
+    string id PK
+    string emisorUid FK
+    string receptorUid FK
+    string emisorNombre
+    string receptorNombre
+    number monto
+    timestamp fecha
+    string tipoEspecial
+  }
+```
 
-- **Se agregaron `emisorNombre` y `receptorNombre`** (denormalización): permite mostrar "Enviaste a Felipe" en el historial sin hacer una consulta adicional a `users/{uid}` por cada movimiento. Mejora la eficiencia de lectura a costa de una pequeña duplicación de datos — un trade-off estándar en bases de datos NoSQL.
-- **Se agregó `tipoEspecial`**: permite diferenciar un depósito/retiro (donde `emisorUid === receptorUid`, ya que la operación es sobre la misma cuenta) de una transferencia real entre dos personas distintas. Necesario para el bonus de depósito/retiro simulado.
-- **No se implementó el campo `descripcion`** del modelo sugerido: ningún formulario de la app lo solicita al usuario; quedó fuera del alcance.
+### Diferencias respecto al modelo base sugerido, y por qué
 
-El historial se arma combinando **dos suscripciones `onSnapshot`** en tiempo real (una por `emisorUid == uid`, otra por `receptorUid == uid`), deduplicadas con un `Map` para evitar mostrar dos veces un depósito/retiro (que matchea ambas condiciones a la vez).
+| Cambio | Justificación |
+|---|---|
+| + `emisorNombre` / `receptorNombre` | Denormalización: muestra "Enviaste a Felipe" sin una consulta extra a `users/{uid}` por cada movimiento. |
+| + `tipoEspecial` | Diferencia un depósito/retiro (`emisorUid === receptorUid`) de una transferencia real. |
+| − `descripcion` | No implementado: ningún formulario lo solicita al usuario. |
+
+El historial combina **dos suscripciones `onSnapshot`** en tiempo real (`emisorUid == uid` y `receptorUid == uid`), deduplicadas con un `Map`.
 
 ## Reglas de seguridad
 
