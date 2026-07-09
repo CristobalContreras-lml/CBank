@@ -134,12 +134,89 @@ input::placeholder {
 }
 
 .auth-card {
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border-radius: var(--radio);
-  box-shadow: var(--sombra-tarjeta);
-  padding: 40px 36px;
+  box-shadow: 0 30px 70px rgba(11, 31, 58, 0.4);
+  padding: 44px 40px;
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--ink) 0%, var(--ink-2) 65%, var(--brass) 100%);
+}
+
+.input-group {
+  position: relative;
+}
+
+.input-group input {
+  padding-left: 44px;
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--texto-muted);
+  pointer-events: none;
+  display: flex;
+}
+
+.input-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 8px;
+  color: var(--texto-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-password:hover {
+  color: var(--ink);
+}
+
+.toggle-password svg {
+  width: 18px;
+  height: 18px;
+}
+
+.auth-trust {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 24px;
+  font-size: 0.78rem;
+  color: var(--texto-muted);
+}
+
+.auth-trust svg {
+  width: 14px;
+  height: 14px;
+  color: var(--emerald);
+  flex-shrink: 0;
 }
 
 .auth-logo-wrap {
