@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { buscarUsuarioPorEmail, transferir } from "../services/transferService";
+import { observarSaldo } from "../services/userService";
+import { validarTransferencia } from "../utils/validaciones";
 import TarjetaDesplegable from "./TarjetaDesplegable";
 
 const LIMITE_OPERACION = 5000000;
@@ -10,6 +12,14 @@ function FormularioTransferencia({ emisorUid, emisorEmail }) {
   const [error, setError] = useState("");
   const [mensajeExito, setMensajeExito] = useState("");
   const [enviando, setEnviando] = useState(false);
+  const [saldoActual, setSaldoActual] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = observarSaldo(emisorUid, ({ datos }) => {
+      if (datos) setSaldoActual(datos.saldo);
+    });
+    return () => unsubscribe();
+  }, [emisorUid]);
 
   function handleEmailDestinoChange(event) {
     setEmailDestino(event.target.value);
@@ -24,18 +34,19 @@ function FormularioTransferencia({ emisorUid, emisorEmail }) {
     setError("");
     setMensajeExito("");
 
-    const emailLimpio = emailDestino.trim();
+    const resultado = validarTransferencia({
+      emailDestino,
+      emailEmisor: emisorEmail,
+      monto,
+      saldoDisponible: saldoActual ?? Infinity,
+    });
+
+    if (!resultado.valido) {
+      setError(resultado.error);
+      return;
+    }
+
     const montoNumero = Number(monto);
-
-    if (!emailLimpio) {
-      setError("Ingresa el correo del destinatario.");
-      return;
-    }
-
-    if (!monto || isNaN(montoNumero) || montoNumero <= 0) {
-      setError("El monto debe ser un número mayor a 0.");
-      return;
-    }
 
     if (montoNumero > LIMITE_OPERACION) {
       setError(
@@ -44,14 +55,9 @@ function FormularioTransferencia({ emisorUid, emisorEmail }) {
       return;
     }
 
-    if (emailLimpio === emisorEmail) {
-      setError("No puedes transferirte dinero a ti mismo.");
-      return;
-    }
-
     setEnviando(true);
     try {
-      const destinatario = await buscarUsuarioPorEmail(emailLimpio);
+      const destinatario = await buscarUsuarioPorEmail(emailDestino.trim());
 
       if (!destinatario) {
         setError("No existe ningún usuario registrado con ese correo.");
