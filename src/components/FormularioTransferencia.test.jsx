@@ -84,4 +84,50 @@ describe("FormularioTransferencia", () => {
       expect(screen.getByRole("button", { name: /^transferir$/i })).not.toBeDisabled();
     });
   });
+
+  it("muestra el mensaje de exito y limpia el formulario tras una transferencia exitosa", async () => {
+    const user = userEvent.setup();
+    buscarUsuarioPorEmail.mockResolvedValue({ uid: "uid-felipe", nombre: "Felipe" });
+    renderFormulario();
+
+    const inputEmail = screen.getByPlaceholderText(/correo del destinatario/i);
+    const inputMonto = screen.getByPlaceholderText(/^monto$/i);
+
+    await user.type(inputEmail, "felipe@cbank.cl");
+    await user.type(inputMonto, "10000");
+    await user.click(screen.getByRole("button", { name: /^transferir$/i }));
+
+    expect(await screen.findByText(/transferiste \$10\.000 a felipe/i)).toBeInTheDocument();
+    expect(inputEmail).toHaveValue("");
+    expect(inputMonto).toHaveValue(null);
+  });
+
+  it("muestra un error cuando el monto supera el limite de operacion", async () => {
+    const user = userEvent.setup();
+    observarSaldo.mockImplementation((uid, callback) => {
+      callback({ datos: { saldo: 10000000, nombre: "Cristobal" }, error: null });
+      return vi.fn();
+    });
+    renderFormulario();
+
+    await user.type(screen.getByPlaceholderText(/correo del destinatario/i), "felipe@cbank.cl");
+    await user.type(screen.getByPlaceholderText(/^monto$/i), "6000000");
+    await user.click(screen.getByRole("button", { name: /^transferir$/i }));
+
+    expect(await screen.findByText(/requieren autorización de un ejecutivo/i)).toBeInTheDocument();
+    expect(transferir).not.toHaveBeenCalled();
+  });
+
+  it("muestra el error del backend cuando la transaccion falla por saldo insuficiente", async () => {
+    const user = userEvent.setup();
+    buscarUsuarioPorEmail.mockResolvedValue({ uid: "uid-felipe", nombre: "Felipe" });
+    transferir.mockRejectedValue(new Error("Saldo insuficiente."));
+    renderFormulario();
+
+    await user.type(screen.getByPlaceholderText(/correo del destinatario/i), "felipe@cbank.cl");
+    await user.type(screen.getByPlaceholderText(/^monto$/i), "10000");
+    await user.click(screen.getByRole("button", { name: /^transferir$/i }));
+
+    expect(await screen.findByText(/no tienes saldo suficiente para esta transferencia/i)).toBeInTheDocument();
+  });
 });
