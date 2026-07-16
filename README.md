@@ -112,3 +112,63 @@ La separación entre `components/` y `services/` permite que la lógica de negoc
 
 Este proyecto se desarrolló con la asistencia de Claude (Anthropic) como tutor de programación, en un proceso guiado paso a paso: cada archivo se explicó antes de escribirse (por qué esa estructura, por qué esas dependencias de `useEffect`, por qué una transacción atómica y no escrituras sueltas), y cada avance se probó en el navegador antes de continuar al siguiente paso. La IA no generó el proyecto de una sola vez; el desarrollo fue incremental, con debugging real de errores propios (configuración de `.env`, reglas de Firestore, errores de sintaxis) resueltos en el camino. Puedo explicar y justificar cada decisión técnica del código, incluyendo por qué ciertos `useEffect` tienen las dependencias que tienen y qué pasaría si se omitiera la limpieza de suscripciones.
 
+
+---
+
+## 🧪 Testing (Evaluación 2)
+
+![Tests](https://github.com/CristobalContreras-lml/CBank/actions/workflows/tests.yml/badge.svg)
+
+### Stack de testing
+
+- **Vitest** como test runner (nativo de Vite)
+- **@testing-library/react** + **@testing-library/user-event** — interacción y queries por accesibilidad
+- **@testing-library/jest-dom** — matchers extra (`toBeInTheDocument`, `toBeDisabled`, etc.)
+- **jsdom** — entorno de navegador simulado
+- **@vitest/coverage-v8** — reporte de cobertura
+
+### Ejecutar los tests
+
+```bash
+npm test
+```
+
+Corre toda la suite una vez y termina (no queda en modo watch).
+
+```bash
+npm run coverage
+```
+
+Corre la suite y genera además el reporte de cobertura de líneas/branches/funciones.
+
+### Qué se refactorizó para hacer el código testeable
+
+- **Validaciones extraídas a `src/utils/validaciones.js`**: la lógica de "monto válido", "email válido" y "reglas de transferencia" vivía mezclada dentro del `handleTransferSubmit` de `FormularioTransferencia.jsx`. Se extrajo a funciones puras (`esEmailValido`, `esMontoValido`, `validarTransferencia`) que no dependen de React ni de Firebase, lo que permite testearlas de forma aislada y exhaustiva sin necesidad de renderizar ningún componente.
+- **`FormularioTransferencia.jsx` se actualizó** para usar `validarTransferencia(...)` en vez de repetir las validaciones inline, y se agregó una suscripción a `observarSaldo` dentro del propio componente (antes solo se validaba el saldo dentro de la transacción atómica) — esto permitió testear el caso "monto mayor al saldo disponible → rechazado" como parte de la función pura.
+
+### Resumen del reporte de cobertura
+
+35 tests, 6 archivos de test, todos en verde.
+
+<p align="center">
+  <img src="./docs/coverage-report.png" alt="Reporte de cobertura de CBank" width="700">
+</p>
+
+Todos los archivos exigidos por la rúbrica (RT2, RT3, RT4) superan el mínimo de 70% de cobertura de líneas: `validaciones.js` (100%), `FormularioTransferencia.jsx` (86.36%), `Login.jsx` (84%), `HistorialMovimientos.jsx` (81.81%). La cobertura de branches es más baja en general porque no se persiguió cubrir cada combinación posible de condiciones — la rúbrica exige cubrir bien lo crítico, no el 100% del proyecto.
+
+Quedaron deliberadamente fuera del alcance de esta evaluación (0% o sin tests directos): `App.jsx`, `DepositoRetiro.jsx`, los archivos de `src/services/` y `src/context/`, y los assets estáticos (imágenes) — ninguno de estos está pedido explícitamente por RT2-RT4.
+
+### Bonus implementados
+
+- **Test de `unsubscribe` al desmontar** (`Saldo.test.jsx`): verifica que la función de limpieza del `useEffect` se ejecuta al desmontar el componente, y que al cambiar el `uid` se cancela la suscripción anterior antes de crear una nueva.
+- **GitHub Actions**: workflow en `.github/workflows/tests.yml` que corre `npm test` en cada `push` a `main`, sobre una máquina virtual limpia (confirma que el proyecto funciona con solo `package.json`, no solo en el entorno local).
+- **Tests parametrizados con `it.each`**: usados en `validaciones.test.js` para la batería de casos de `esMontoValido`.
+
+### Uso de IA para los tests
+
+Se usó Claude como asistente para diseñar la estructura de tests (AAA, mocks, casos borde) y explicar el porqué de cada decisión antes de escribirla. Varios tests generados inicialmente fallaron y se corrigieron con causas reales, no triviales:
+
+- **Query ambigua en `FormularioTransferencia.test.jsx`**: el primer intento usaba `getByRole("button", { name: /transferir/i })`, que hacía match con dos botones distintos (el header colapsable "Transferir dinero" y el botón de submit "Transferir"), porque la regex sin anclas coincidía con cualquier texto que *contuviera* la palabra. Se corrigió a `/^transferir$/i` para exigir coincidencia exacta.
+- **Mock de historial sin ordenar**: un test de `HistorialMovimientos.test.jsx` asumía que el componente ordenaba los movimientos por fecha, y fallaba porque esa lógica en realidad vive en `historialService.js` (el componente solo renderiza lo que recibe). Se corrigió el mock para que entregue los datos ya ordenados, imitando fielmente el contrato real del servicio.
+- **Interacción entre validaciones**: un test que esperaba el error de "límite de operación" ($5.000.000) recibía en cambio el error de "saldo insuficiente", porque el saldo mockeado por defecto ($100.000) era menor al monto de prueba. Se corrigió mockeando un saldo suficientemente alto para aislar específicamente la validación de límite.
+
